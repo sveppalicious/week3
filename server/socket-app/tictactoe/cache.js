@@ -1,6 +1,3 @@
-/*
-A simple in-process FIFO cache. Not suitable for production use, and certainly not in a clustered application.
- */
 module.exports=function(injected){
     const cacheSize = injected('cacheSize');
 
