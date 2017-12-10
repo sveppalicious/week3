@@ -2,6 +2,8 @@ let CacheModule = require('./cache');
 
 describe("Tictactoe command handler", function () {
 
+    let resultingEvents =[];
+
     let Cache = CacheModule(
         inject({cacheSize:1})
     );
