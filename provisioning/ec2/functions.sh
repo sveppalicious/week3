@@ -8,24 +8,24 @@ function create-key-pair(){
 
 function create-security-group(){
     SECURITY_GROUP_NAME=${1}
-    if [ ! -e ./ec2_instance/security-group-id.txt ]; then
+    if [ ! -e ~/aws/security-group-id.txt ]; then
         export SECURITY_GROUP_ID=$(aws ec2 create-security-group --group-name ${SECURITY_GROUP_NAME} --description "security group for dev environment in EC2" --query "GroupId"  --output=text)
-        echo ${SECURITY_GROUP_ID} > ./ec2_instance/security-group-id.txt
+        echo ${SECURITY_GROUP_ID} > ~/aws/security-group-id.txt
         echo Created security group ${SECURITY_GROUP_NAME} with ID ${SECURITY_GROUP_ID}
     else
-        export SECURITY_GROUP_ID=$(cat ./ec2_instance/security-group-id.txt)
+        export SECURITY_GROUP_ID=$(cat ~/aws/security-group-id.txt)
     fi
 }
 
 function delete-security-group(){
     SECURITY_GROUP_NAME=${1}
-    if [ -e ./ec2_instance/security-group-id.txt ]; then
-        SECURITY_GROUP_ID=$(cat ./ec2_instance/security-group-id.txt)
+    if [ -e ~/aws/security-group-id.txt ]; then
+        SECURITY_GROUP_ID=$(cat ~/aws/security-group-id.txt)
         aws ec2 delete-security-group --group-name ${SECURITY_GROUP_NAME}
-        rm ./ec2_instance/security-group-id.txt
+        rm ~/aws/security-group-id.txt
         echo Deleted security group ${SECURITY_GROUP_NAME} with ID ${SECURITY_GROUP_ID}
     else
-        echo "Security group ID ./ec2_instance/security-group-id.txt "
+        echo "Security group ID ~/aws/security-group-id.txt "
     fi
 }
 
@@ -37,18 +37,18 @@ function create-ec2-instance(){
 
     echo "AMI_IMAGE_ID=$1 SECURITY_GROUP_ID=$2 INSTANCE_INIT_SCRIPT=$3 PEM_NAME=$4"
 
-    if [ ! -d ./ec2_instance/ ]; then
-        mkdir ./ec2_instance/
+    if [ ! -d ~/aws/ ]; then
+        mkdir ~/aws/
     fi
 
-    if [ ! -e ./ec2_instance/instance-id.txt ]; then
+    if [ ! -e ~/aws/instance-id.txt ]; then
         set -e
         echo "Create ec2 instance on security group SECURITY_GROUP_ID ${SECURITY_GROUP_ID} AMI_IMAGE_ID ${AMI_IMAGE_ID} PEM_NAME ${PEM_NAME}"
 
         echo aws ec2 run-instances  --user-data file://${INSTANCE_INIT_SCRIPT} --image-id ${AMI_IMAGE_ID} --security-group-ids ${SECURITY_GROUP_ID} --count 1 --instance-type t2.micro --key-name ${PEM_NAME} --query 'Instances[0].InstanceId'  --output=text
 
         INSTANCE_ID=$(aws ec2 run-instances  --user-data file://${INSTANCE_INIT_SCRIPT} --image-id ${AMI_IMAGE_ID} --security-group-ids ${SECURITY_GROUP_ID} --count 1 --instance-type t2.micro --key-name ${PEM_NAME} --query 'Instances[0].InstanceId'  --output=text)
-        echo ${INSTANCE_ID} > ./ec2_instance/instance-id.txt
+        echo ${INSTANCE_ID} > ~/aws/instance-id.txt
 
         echo Waiting for instance to be running
         echo aws ec2 wait --region eu-west-1 instance-running --instance-ids ${INSTANCE_ID}
@@ -58,8 +58,8 @@ function create-ec2-instance(){
 
     fi
 
-    if [ ! -e ./ec2_instance/instance-public-name.txt ]; then
-        echo ${INSTANCE_PUBLIC_NAME} > ./ec2_instance/instance-public-name.txt
+    if [ ! -e ~/aws/instance-public-name.txt ]; then
+        echo ${INSTANCE_PUBLIC_NAME} > ~/aws/instance-public-name.txt
     fi
 }
 
