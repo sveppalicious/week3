@@ -8,7 +8,7 @@ services:
       - 'DB_ENV=prod'
     image: 'ironpeak/tictactoe:${GIT_COMMIT}'
     ports:
-      - '8080:8080'
+      - '8000:8000'
     links:
       - 'postgres'
   postgres:
