@@ -10,7 +10,7 @@ export default function (injected) {
             super();
             this.state = {
                 move:{
-
+                  side:"",
                 }
             }
         }
@@ -18,6 +18,12 @@ export default function (injected) {
             this.unsubscribe = eventRouter.on('MovePlaced', (moveEvent)=>{
             //    Key logic goes here. Remember---the cell gets all move events, not only its own.
             console.log(moveEvent);
+            //this.setState({move:moveEvent.move})
+            if (this.props.coordinates.x === moveEvent.move.xy.x && this.props.coordinates.y === moveEvent.move.xy.y) {
+              this.setState({
+                move: moveEvent.move
+              });
+            }
             })
         }
         componentWillUnmount(){
